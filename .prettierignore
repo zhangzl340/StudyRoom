@@ -1,0 +1,10 @@
+node_modules
+dist
+*.min.js
+coverage
+.vscode
+.idea
+*.md
+*.log
+package-lock.json
+yarn.lock
