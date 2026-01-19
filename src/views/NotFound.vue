@@ -1,48 +1,90 @@
 <template>
   <div class="not-found">
-    <h1>404 - 页面未找到</h1>
-    <p>抱歉，您访问的页面不存在。</p>
-    <router-link to="/" class="back-home">返回首页</router-link>
+    <div class="container">
+      <div class="error-code">404</div>
+      <div class="error-message">页面未找到</div>
+      <p class="description">抱歉，您访问的页面不存在或已被移除</p>
+      <div class="actions">
+        <el-button type="primary" @click="goHome">返回首页</el-button>
+        <el-button @click="goBack">返回上一页</el-button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// 404页面组件
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const goHome = () => {
+  router.push('/')
+}
+
+const goBack = () => {
+  router.back()
+}
 </script>
 
 <style scoped>
 .not-found {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 60vh;
+  min-height: 70vh;
   text-align: center;
+  padding: 40px 20px;
 }
 
-.not-found h1 {
-  font-size: 48px;
-  color: #f56c6c;
+.container {
+  max-width: 600px;
+}
+
+.error-code {
+  font-size: 120px;
+  font-weight: bold;
+  color: #409eff;
+  line-height: 1;
   margin-bottom: 20px;
 }
 
-.not-found p {
-  font-size: 18px;
-  color: #666;
-  margin-bottom: 30px;
+.error-message {
+  font-size: 32px;
+  font-weight: 500;
+  color: #303133;
+  margin-bottom: 20px;
 }
 
-.back-home {
-  padding: 12px 24px;
-  background-color: #409eff;
-  color: white;
-  text-decoration: none;
-  border-radius: 4px;
+.description {
   font-size: 16px;
-  transition: background-color 0.3s;
+  color: #606266;
+  margin-bottom: 30px;
+  line-height: 1.6;
 }
 
-.back-home:hover {
-  background-color: #66b1ff;
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+@media (max-width: 768px) {
+  .error-code {
+    font-size: 80px;
+  }
+  
+  .error-message {
+    font-size: 24px;
+  }
+  
+  .actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .actions .el-button {
+    width: 100%;
+  }
 }
 </style>

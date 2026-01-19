@@ -1,26 +1,32 @@
 <template>
-  <div id="app">
-    <!-- 路由视图容器 -->
+  <component :is="layout">
     <router-view />
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
-// App根组件
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import DefaultLayout from './layouts/DefaultLayout.vue'
+import AdminLayout from './layouts/AdminLayout.vue'
+import AuthLayout from './layouts/AuthLayout.vue'
+
+const route = useRoute()
+
+const layout = computed(() => {
+  const layoutName = route.meta.layout as string || 'DefaultLayout'
+  
+  switch (layoutName) {
+    case 'AdminLayout':
+      return AdminLayout
+    case 'AuthLayout':
+      return AuthLayout
+    default:
+      return DefaultLayout
+  }
+})
 </script>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-  min-height: 100vh;
-}
+/* 全局样式已经在style.css中导入 */
 </style>
