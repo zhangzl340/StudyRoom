@@ -92,7 +92,7 @@
     </el-form>
     
     <div class="login-link">
-      已有账户？<router-link to="/login">立即登录</router-link>
+      已有账户？<router-link to="/student/login">立即登录</router-link>
     </div>
   </div>
 </template>
@@ -214,7 +214,7 @@ const handleRegister = async () => {
     
     // 注册成功后跳转到登录页面
     ElMessage.success('注册成功，请登录')
-    router.push('/login')
+    router.push('/student/login')
   } catch (error) {
     console.error('注册失败:', error)
   } finally {
@@ -223,7 +223,7 @@ const handleRegister = async () => {
 }
 
 const handleBack = () => {
-  router.push('/login')
+  router.push('/student/login')
 }
 </script>
 

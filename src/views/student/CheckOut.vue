@@ -1,4 +1,3 @@
-<!-- 签到/签退组件 -->
 <template>
   <div class="check-in-out">
     <!-- 状态提示 -->

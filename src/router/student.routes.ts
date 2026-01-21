@@ -3,7 +3,7 @@ import type { RouteRecordRaw } from 'vue-router'
 
 const studentRoutes: RouteRecordRaw[] = [
   {
-    path: '/',
+    path: '/student',
     name: 'Home',
     component: () => import('@/views/student/Home.vue'),
     meta: {
@@ -12,8 +12,17 @@ const studentRoutes: RouteRecordRaw[] = [
       layout: 'DefaultLayout'
     }
   },
+    {
+    path: '/',
+    component: () => import('@/views/student/Home.vue'),
+    meta: {
+      title: '首页',
+      requiresAuth: true,
+      layout: 'DefaultLayout'
+    }
+  },
   {
-    path: '/login',
+    path: '/student/login',
     name: 'Login',
     component: () => import('@/views/student/Login.vue'),
     meta: {
@@ -23,7 +32,7 @@ const studentRoutes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/register',
+    path: '/student/register',
     name: 'Register',
     component: () => import('@/views/student/Register.vue'),
     meta: {
@@ -33,7 +42,7 @@ const studentRoutes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/room/:id',
+    path: '/student/room/:id',
     name: 'RoomDetail',
     component: () => import('@/views/student/RoomDetail.vue'),
     meta: {
@@ -43,7 +52,7 @@ const studentRoutes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/my-reservations',
+    path: '/student/my-reservations',
     name: 'MyReservations',
     component: () => import('@/views/student/MyReservations.vue'),
     meta: {
@@ -53,7 +62,7 @@ const studentRoutes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/profile',
+    path: '/student/profile',
     name: 'Profile',
     component: () => import('@/views/student/Profile.vue'),
     meta: {
@@ -63,7 +72,7 @@ const studentRoutes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/check-in',
+    path: '/student/check-in',
     name: 'CheckIn',
     component: () => import('@/views/student/CheckIn.vue'),
     meta: {

@@ -9,15 +9,15 @@
           </router-link>
         </div>
         <nav class="nav">
-          <router-link to="/" class="nav-link" :class="{ active: currentRoute === 'Home' }">
+          <router-link to="/student" class="nav-link" :class="{ active: currentRoute === 'Home' }">
             <el-icon><House /></el-icon>
             <span>首页</span>
           </router-link>
-          <router-link to="/my-reservations" class="nav-link" :class="{ active: currentRoute === 'MyReservations' }">
+          <router-link to="/student/my-reservations" class="nav-link" :class="{ active: currentRoute === 'MyReservations' }">
             <el-icon><Calendar /></el-icon>
             <span>我的预约</span>
           </router-link>
-          <router-link to="/profile" class="nav-link" :class="{ active: currentRoute === 'Profile' }">
+          <router-link to="/student/profile" class="nav-link" :class="{ active: currentRoute === 'Profile' }">
             <el-icon><User /></el-icon>
             <span>个人中心</span>
           </router-link>
@@ -29,7 +29,7 @@
             <el-icon><SwitchButton /></el-icon>
             退出登录
           </button>
-          <router-link v-else to="/login" class="login-btn">
+          <router-link v-else to="/student/login" class="login-btn">
             <el-icon><UserFilled /></el-icon>
             登录
           </router-link>

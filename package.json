@@ -20,6 +20,7 @@
     "vue": "^3.3.4",
     "vue-echarts": "^6.6.0",
     "vue-i18n": "^9.4.0",
+    "vue-qrcode-reader": "^5.7.3",
     "vue-router": "^4.2.4"
   },
   "devDependencies": {
@@ -28,10 +29,12 @@
     "@typescript-eslint/parser": "^6.21.0",
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue/tsconfig": "^0.4.0",
+    "axios-mock-adapter": "^2.1.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-vue": "^9.33.0",
+    "mockjs": "^1.1.0",
     "prettier": "^3.8.0",
     "sass": "^1.63.6",
     "typescript": "^5.1.6",

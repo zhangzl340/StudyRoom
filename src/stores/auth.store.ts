@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import type { IUser, ILoginRequest, ILoginResponse, IUpdateUserRequest, IChangePasswordRequest } from '@/types/user.types'
-import { authApi } from '@/api/auth'
+import { UserRole,UserStatus } from '@/types/user.types'
+import { authApi  } from '@/api/auth'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -13,7 +14,8 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     currentUser: (state) => state.user,
-    isLoggedIn: (state) => state.isAuthenticated
+    isLoggedIn: (state) => state.isAuthenticated,
+    getError: (state) => state.error
   },
 
   actions: {
@@ -58,8 +60,8 @@ export const useAuthStore = defineStore('auth', {
           major: '软件工程',
           grade: '2024级',
           className: '软件2401',
-          role: 'student',
-          status: 'active',
+          role: UserRole.STUDENT,
+          status: UserStatus.ACTIVE,
           creditScore: 100,
           reservationCount: 5,
           totalUsageHours: 25,
@@ -118,8 +120,8 @@ export const useAuthStore = defineStore('auth', {
           major: '软件工程',
           grade: '2024级',
           className: '软件2401',
-          role: 'student',
-          status: 'active',
+          role: UserRole.STUDENT,
+          status: UserStatus.ACTIVE,
           creditScore: 100,
           reservationCount: 5,
           totalUsageHours: 25,

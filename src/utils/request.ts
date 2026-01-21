@@ -140,10 +140,12 @@ service.interceptors.response.use(
 // 定义请求方法
 export const http = {
   get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    console.log(`GET ${url}`)
     return service.get(url, config)
   },
   
   post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    console.log(`POST ${url}`)
     return service.post(url, data, config)
   },
   

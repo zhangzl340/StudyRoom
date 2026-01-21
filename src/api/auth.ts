@@ -81,8 +81,8 @@ export const authApi = {
    * 获取验证码
    */
   async getCaptcha() {
-    return handleApiResponse<{ captchaId: string; captchaImage: string }>(
-      http.get('/auth/captcha')
+    return handleApiResponse<{ captcha: string; captchaImage: string }>(
+      http.get('/api/auth/captcha')
     )
   },
   
