@@ -2,6 +2,16 @@
 import type { RouteRecordRaw } from 'vue-router'
 
 const adminRoutes: RouteRecordRaw[] = [
+   {
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: () => import('@/views/admin/Login.vue'),
+    meta: {
+      title: '管理员登录'
+      // 注意：这里不设置 requiresAuth 和 requiresAdmin
+      // 否则会形成死循环（登录页面需要登录才能访问）
+    }
+  },
   {
     path: '/admin',
     redirect: '/admin/dashboard'
@@ -69,6 +79,15 @@ const adminRoutes: RouteRecordRaw[] = [
       title: '公告管理',
       requiresAuth: true,
       requiresAdmin: true,
+      layout: 'AdminLayout'
+    }
+  },
+  {
+    path: '/admin/test',
+    name: 'AdminTest',
+    component: () => import('@/views/admin/TestAccess.vue'),
+    meta: {
+      title: '管理端测试',
       layout: 'AdminLayout'
     }
   }
