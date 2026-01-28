@@ -21,9 +21,9 @@ export enum UserStatus {
  * 用户基本信息接口
  */
 export interface IUserBase {
-  id: string
   username: string
   realName: string
+  nickname?: string
   email: string
   phone?: string
   studentId?: string
@@ -32,18 +32,22 @@ export interface IUserBase {
   major?: string
   grade?: string
   className?: string
+  gender?: number
 }
 
 /**
  * 用户详细信息接口
  */
 export interface IUser extends IUserBase {
-  role: UserRole
-  status: UserStatus
+  id: number
+  role: string
+  roleType: string
+  status: number
   creditScore: number
-  reservationCount: number
-  totalUsageHours: number
+  identityStatus: number
+  lastLoginIp?: string
   lastLoginTime?: string
+  createTime?: string
   createdAt: string
   updatedAt: string
 }
@@ -64,8 +68,9 @@ export interface ILoginRequest {
 export interface ILoginResponse {
   token: string
   tokenType: string
+  refreshToken: string
   expiresIn: number
-  user: IUser
+  userInfo: IUser
 }
 
 /**

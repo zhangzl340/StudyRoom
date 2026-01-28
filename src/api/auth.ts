@@ -9,6 +9,7 @@ import type {
   IUpdateUserRequest,
   IChangePasswordRequest
 } from '@/types/user.types'
+import type { IApiResponse } from '@/types/api.types'
 
 /**
  * 认证相关API
@@ -18,7 +19,7 @@ export const authApi = {
    * 用户登录
    */
   async login(data: ILoginRequest) {
-    return handleApiResponse<ILoginResponse>(
+    return handleApiResponse<IApiResponse<ILoginResponse>>(
       http.post(`auth/login`, data)
     )
   },
@@ -27,7 +28,7 @@ export const authApi = {
    * 用户注册
    */
   async register(data: IRegisterRequest) {
-    return handleApiResponse<IUser>(
+    return handleApiResponse<IApiResponse<IUser>>(
       http.post(`auth/register`, data)
     )
   },
@@ -36,7 +37,7 @@ export const authApi = {
    * 用户登出
    */
   async logout() {
-    return handleApiResponse<void>(
+    return handleApiResponse<IApiResponse<void>>(
       http.post(`auth/logout`)
     )
   },
@@ -45,7 +46,7 @@ export const authApi = {
    * 获取当前用户信息
    */
   async getCurrentUser() {
-    return handleApiResponse<IUser>(
+    return handleApiResponse<IApiResponse<IUser>>(
       http.get(`auth/me`)
     )
   },
@@ -54,7 +55,7 @@ export const authApi = {
    * 刷新Token
    */
   async refreshToken(refreshToken: string) {
-    return handleApiResponse<ILoginResponse>(
+    return handleApiResponse<IApiResponse<ILoginResponse>>(
       http.post(`auth/refresh`, { refreshToken })
     )
   },
@@ -63,7 +64,7 @@ export const authApi = {
    * 修改用户信息
    */
   async updateUserInfo(data: IUpdateUserRequest) {
-    return handleApiResponse<IUser>(
+    return handleApiResponse<IApiResponse<IUser>>(
       http.put(`auth/profile`, data)
     )
   },
@@ -72,7 +73,7 @@ export const authApi = {
    * 修改密码
    */
   async changePassword(data: IChangePasswordRequest) {
-    return handleApiResponse<void>(
+    return handleApiResponse<IApiResponse<void>>(
       http.post(`auth/change-password`, data)
     )
   },
@@ -81,7 +82,7 @@ export const authApi = {
    * 获取验证码
    */
   async getCaptcha() {
-    return handleApiResponse<{ captcha: string; captchaImage: string }>(
+    return handleApiResponse<IApiResponse<{ captchaKey: string; captchaImage: string }>>(
       http.get(`auth/captcha`)
     )
   },
@@ -90,7 +91,7 @@ export const authApi = {
    * 重置密码请求
    */
   async requestResetPassword(email: string) {
-    return handleApiResponse<void>(
+    return handleApiResponse<IApiResponse<void>>(
       http.post(`auth/reset-password/request`, null, {
         params: { email }
       })
@@ -101,7 +102,7 @@ export const authApi = {
    * 重置密码
    */
   async resetPassword(token: string, newPassword: string) {
-    return handleApiResponse<void>(
+    return handleApiResponse<IApiResponse<void>>(
       http.post(`auth/reset-password`, null, {
         params: { token, newPassword }
       })
@@ -112,7 +113,7 @@ export const authApi = {
    * 实名认证
    */
   async verifyIdentity(data: any) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.post(`auth/verify-identity`, data)
     )
   }

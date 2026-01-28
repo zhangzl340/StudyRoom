@@ -75,13 +75,18 @@
 import { ref, reactive, onMounted } from 'vue';
 import { ElForm, ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth.store';
+import { useAuthStore, useStore } from '@/stores';
 import { authApi } from '@/api';
-import type { ILoginRequest } from '@/types/user.types';
 
+import type { ILoginRequest } from '@/types/user.types';
 // 状态管理 & 路由
-const authStore = useAuthStore();
+
 const router = useRouter();
+const authStore = useAuthStore();
+onMounted(() =>{
+    // 状态管理
+    // const authStore = useAuthStore();
+});
 
 // 表单（严格遵循 ILoginRequest 类型）
 const loginFormRef = ref<InstanceType<typeof ElForm>>();
@@ -110,35 +115,37 @@ const loginRules = reactive({
 const captchaImage = ref('');
 const refreshCaptcha = async () => {
   try {
-    const { data } = await authApi.getCaptcha();
-    console.log(data);
+    const { data, error } = await authApi.getCaptcha();
+
+    if (error) throw error;
     if (data) {
-      loginForm.captchaKey = data.captchaKey;
-      captchaImage.value = data.captchaImage;
+      loginForm.captchaKey = data.data.captchaKey || '';
+      captchaImage.value = data.data.captchaImage;
     }
-  } catch (error) {
-    ElMessage.error('获取验证码失败');
+  } catch (error: any) {
+    ElMessage.error(error.message || '获取验证码失败');
   }
 };
 
-// 登录处理（调用已有 authApi 和 Store）
+// 登录处理（使用authStore.login方法）
 const handleLogin = async () => {
   if (!loginFormRef.value) return;
   
   try {
     await loginFormRef.value.validate();
-    loading.value = true;
     
-    const { error } = await authStore.login(loginForm);
-    if (!error) {
-      ElMessage.success('登录成功');
-      router.push('/student');
-    } else {
-      ElMessage.error(error.message || '登录失败');
-      refreshCaptcha();
-    }
-  } catch (error) {
-    // 验证失败，不做处理
+    loading.value = true;
+    console.log('[Login.vue] 登录参数:', loginForm);
+    
+    // 使用authStore.login方法
+    const userInfo = await authStore.login(loginForm);
+    console.log('登录成功，用户信息:', userInfo);
+    ElMessage.success('登录成功');
+    router.push('/student');
+  } catch (error: any) {
+    console.error('登录失败:', error);
+    ElMessage.error(error.message || '登录失败');
+    refreshCaptcha();
   } finally {
     loading.value = false;
   }
@@ -149,6 +156,8 @@ const goToRegister = () => router.push('/student/register');
 
 // 初始化验证码
 onMounted(() => refreshCaptcha());
+
+
 </script>
 
 <style scoped>

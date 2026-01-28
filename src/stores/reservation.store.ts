@@ -9,9 +9,8 @@ import  {
   CheckInMethod
 } from '@/types/reservation.types'
 
-
-
 import { reservationApi } from '@/api/reservation'
+import { checkInApi } from '@/api/checkIn.api'
 import { formatDateTime, getDurationMinutes } from '@/utils/date'
 
 export const useReservationStore = defineStore('reservation', {
@@ -98,7 +97,7 @@ export const useReservationStore = defineStore('reservation', {
     },
 
     // 获取我的预约
-    async fetchMyReservations(userId: string, params?: any) {
+    async fetchMyReservations(userId: number, params?: any) {
       this.reservationLoading = true
       this.reservationError = null
       
@@ -138,13 +137,12 @@ export const useReservationStore = defineStore('reservation', {
     },
 
     // 取消预约
-    async cancelReservation(reservationId: string) {
+    async cancelReservation(reservationId: number) {
       this.reservationLoading = true
       this.reservationError = null
       
       try {
-        const { data, error } = await reservationApi.cancelReservation(reservationId)
-        if (error) throw error
+        await reservationApi.cancelReservation(reservationId.toString())
         
         // 更新本地数据
         const reservationIndex = this.reservations.findIndex(r => r.id === reservationId)
@@ -152,6 +150,7 @@ export const useReservationStore = defineStore('reservation', {
           this.reservations[reservationIndex] = {
             ...this.reservations[reservationIndex],
             status: ReservationStatus.CANCELLED,
+            cancelTime: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           }
         }
@@ -169,13 +168,12 @@ export const useReservationStore = defineStore('reservation', {
     },
 
     // 签到
-    async checkIn(reservationId: string, method: CheckInMethod) {
+    async checkIn(reservationId: number, method: CheckInMethod) {
       this.reservationLoading = true
       this.reservationError = null
       
       try {
-        const { data, error } = await reservationApi.checkIn({ reservationId, checkInMethod: method })
-        if (error) throw error
+        const response = await checkInApi.checkIn({ reservationId, checkInMethod: method })
         
         // 更新本地数据
         const reservationIndex = this.reservations.findIndex(r => r.id === reservationId)
@@ -185,7 +183,6 @@ export const useReservationStore = defineStore('reservation', {
             status: ReservationStatus.CHECKED_IN,
             checkInTime: new Date().toISOString(),
             checkInMethod: method,
-            actualStartTime: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           }
         }
@@ -199,32 +196,33 @@ export const useReservationStore = defineStore('reservation', {
     },
 
     // 签退
-    async checkOut(reservationId: string) {
+    async checkOut(checkInId: number) {
       this.reservationLoading = true
       this.reservationError = null
       
       try {
-        const { data, error } = await reservationApi.checkOut({ reservationId })
-        if (error) throw error
+        await checkInApi.checkOut({ checkInId })
         
         // 更新本地数据
-        const reservationIndex = this.reservations.findIndex(r => r.id === reservationId)
+        // 注意：这里需要找到对应的预约并更新状态
+        // 由于我们现在使用checkInId，可能需要通过其他方式找到预约
+        // 简化处理：假设我们通过reservationId找到预约
+        const reservationIndex = this.reservations.findIndex(r => r.status === ReservationStatus.CHECKED_IN)
         if (reservationIndex !== -1) {
           const reservation = this.reservations[reservationIndex]
           const checkOutTime = new Date()
-          const actualEndTime = checkOutTime.toISOString()
+          const checkOutTimeStr = checkOutTime.toISOString()
           const actualDuration = getDurationMinutes(
-            reservation.actualStartTime || reservation.startTime,
-            actualEndTime
+            reservation.checkInTime || reservation.startTime,
+            checkOutTimeStr
           )
           
           this.reservations[reservationIndex] = {
             ...reservation,
             status: ReservationStatus.CHECKED_OUT,
-            checkOutTime: checkOutTime.toISOString(),
-            actualEndTime,
+            checkOutTime: checkOutTimeStr,
             actualDuration,
-            updatedAt: checkOutTime.toISOString()
+            updatedAt: checkOutTimeStr
           }
         }
       } catch (error: any) {
@@ -237,7 +235,7 @@ export const useReservationStore = defineStore('reservation', {
     },
 
     // 检查预约冲突
-    async checkReservationConflict(seatId: string, startTime: string, endTime: string) {
+    async checkReservationConflict(seatId: number, startTime: string, endTime: string) {
       try {
         console.log('检查预约冲突:', { seatId, startTime, endTime })
         

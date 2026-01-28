@@ -2,26 +2,63 @@ import axios, {
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
-  InternalAxiosRequestConfig
+  InternalAxiosRequestConfig,
+  AxiosError
 } from 'axios'
 import { useAuthStore } from '@/stores/auth.store'
+import router from '@/router'
 
-// 由于router还没有完全创建，我们暂时移除router相关代码
-// 在router完全创建后，可以取消注释以下行
-// import router from '@/router'
+// 环境变量
+const isDev = import.meta.env.DEV
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
+const REQUEST_TIMEOUT = parseInt(import.meta.env.VITE_REQUEST_TIMEOUT || '10000')
 
+// 定义请求取消的Map
+const cancelTokenMap = new Map<string, AbortController>()
+
+// 定义缓存的Map
+const cacheMap = new Map<string, { data: any; timestamp: number }>()
+
+// 缓存过期时间（毫秒）
+const CACHE_EXPIRY = 5 * 60 * 1000 // 5分钟
+
+// 重试次数
+const MAX_RETRY_COUNT = 3
+
+// 创建axios实例
 const service: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
-  timeout: parseInt(import.meta.env.VITE_REQUEST_TIMEOUT || '10000'),
+  baseURL: API_BASE_URL,
+  timeout: REQUEST_TIMEOUT,
   headers: {
     'Content-Type': 'application/json'
   }
 })
 
+// 生成请求key
+const generateRequestKey = (config: InternalAxiosRequestConfig): string => {
+  const { url, method, params, data } = config
+  return `${method || 'GET'}_${url}_${JSON.stringify(params || {})}_${JSON.stringify(data || {})}`
+}
+
 // 请求拦截器
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const authStore = useAuthStore()
+    
+    // 生成请求key
+    const requestKey = generateRequestKey(config)
+    
+    // 取消之前的相同请求
+    if (cancelTokenMap.has(requestKey)) {
+      const controller = cancelTokenMap.get(requestKey)
+      controller?.abort()
+      cancelTokenMap.delete(requestKey)
+    }
+    
+    // 创建新的AbortController
+    const controller = new AbortController()
+    config.signal = controller.signal
+    cancelTokenMap.set(requestKey, controller)
     
     // 添加认证token
     if (authStore.token) {
@@ -36,18 +73,43 @@ service.interceptors.request.use(
       }
     }
     
+    // 开发环境打印请求信息
+    if (isDev) {
+      console.log(`🚀 ${config.method?.toUpperCase()} ${config.url}`)
+      if (config.params) {
+        console.log('📋 Params:', config.params)
+      }
+      if (config.data) {
+        console.log('📦 Data:', config.data)
+      }
+    }
+    
     return config
   },
-  (error) => {
-    console.error('Request error:', error)
+  (error: AxiosError) => {
+    if (isDev) {
+      console.error('❌ 请求发送失败:', error)
+    }
     return Promise.reject(error)
   }
 )
 
-// 响应拦截器 - 暂时简化，等router完全创建后再添加跳转逻辑
+// 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse) => {
-    const { data } = response
+    const { config, data } = response
+    
+    // 生成请求key
+    const requestKey = generateRequestKey(config as InternalAxiosRequestConfig)
+    
+    // 从取消token map中删除
+    cancelTokenMap.delete(requestKey)
+    
+    // 开发环境打印响应信息
+    if (isDev) {
+      console.log(`✅ ${config.method?.toUpperCase()} ${config.url} 响应成功`)
+      console.log('📬 Response:', data)
+    }
     
     // 如果返回的是API响应格式
     if (data && typeof data === 'object' && 'code' in data) {
@@ -55,19 +117,19 @@ service.interceptors.response.use(
       
       // 处理成功响应
       if (code === 200) {
-        return data.data
+        return data
       }
       
-      // 处理认证错误 - 暂时先返回错误，等router完善后再处理跳转
+      // 处理认证错误
       if (code === 401) {
         const authStore = useAuthStore()
         authStore.logout()
         
-        // TODO: 在router完善后，取消注释以下代码
-        // router.push({
-        //   name: 'Login',
-        //   query: { redirect: router.currentRoute.value.fullPath }
-        // })
+        // 跳转到登录页
+        router.push({
+          name: 'Login',
+          query: { redirect: router.currentRoute.value.fullPath }
+        })
         
         return Promise.reject(new Error('认证已过期，请重新登录'))
       }
@@ -79,9 +141,45 @@ service.interceptors.response.use(
     // 如果不是标准格式，直接返回原始数据
     return data
   },
-  (error) => {
-    console.error('Response error:', error)
+  async (error: AxiosError) => {
+    // 生成请求key
+    if (error.config) {
+      const requestKey = generateRequestKey(error.config as InternalAxiosRequestConfig)
+      cancelTokenMap.delete(requestKey)
+    }
     
+    // 开发环境打印错误信息
+    if (isDev) {
+      console.error('❌ 响应错误:', error)
+    }
+    
+    // 处理请求取消
+    if (error.name === 'AbortError') {
+      return Promise.reject(new Error('请求已取消'))
+    }
+    
+    // 处理重试逻辑
+    if (error.config && error.config.headers) {
+      const retryCount = (error.config.headers['X-Retry-Count'] as number) || 0
+      
+      if (retryCount < MAX_RETRY_COUNT && 
+          (error.code === 'ECONNABORTED' || 
+           error.code === 'ETIMEDOUT' || 
+           error.code === 'ENETUNREACH')) {
+        
+        error.config.headers['X-Retry-Count'] = retryCount + 1
+        
+        if (isDev) {
+          console.log(`🔄 重试请求 (${retryCount + 1}/${MAX_RETRY_COUNT}): ${error.config.url}`)
+        }
+        
+        // 延迟重试
+        await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)))
+        return service(error.config)
+      }
+    }
+    
+    // 处理HTTP错误
     if (error.response) {
       const { status, data } = error.response
       
@@ -95,11 +193,11 @@ service.interceptors.response.use(
           const authStore = useAuthStore()
           authStore.logout()
           
-          // TODO: 在router完善后，取消注释以下代码
-          // router.push({
-          //   name: 'Login',
-          //   query: { redirect: router.currentRoute.value.fullPath }
-          // })
+          // 跳转到登录页
+          router.push({
+            name: 'Login',
+            query: { redirect: router.currentRoute.value.fullPath }
+          })
           break
         case 403:
           error.message = '没有操作权限'
@@ -124,7 +222,7 @@ service.interceptors.response.use(
       }
       
       // 如果有业务错误消息，使用业务消息
-      if (data && data.message) {
+      if (data && typeof data === 'object' && data.message) {
         error.message = data.message
       }
     } else if (error.request) {
@@ -140,12 +238,10 @@ service.interceptors.response.use(
 // 定义请求方法
 export const http = {
   get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    console.log(`GET ${url}`)
     return service.get(url, config)
   },
   
   post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    console.log(`POST ${url}`)
     return service.post(url, data, config)
   },
   
@@ -159,7 +255,37 @@ export const http = {
   
   patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
     return service.patch(url, data, config)
+  },
+  
+  // 取消请求
+  cancelRequest(url: string): void {
+    for (const [key, controller] of cancelTokenMap.entries()) {
+      if (key.includes(url)) {
+        controller.abort()
+        cancelTokenMap.delete(key)
+      }
+    }
+  },
+  
+  // 取消所有请求
+  cancelAllRequests(): void {
+    for (const controller of cancelTokenMap.values()) {
+      controller.abort()
+    }
+    cancelTokenMap.clear()
+    if (isDev) {
+      console.log('🧹 已取消所有请求')
+    }
+  },
+  
+  // 清除缓存
+  clearCache(): void {
+    cacheMap.clear()
+    if (isDev) {
+      console.log('🧹 已清除所有缓存')
+    }
   }
 }
 
+// 导出service
 export default service

@@ -29,6 +29,21 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    strictPort: true, // 严格使用指定端口，而不是自动选择其他端口
+    host: true,
+    hmr: {
+      protocol: 'ws',
+      port: 3000,
+      overlay: {
+        warnings: false,
+        errors: true
+      }
+    },
+    headers: {
+      'Cache-Control': 'no-store',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:8080', // 后端服务器地址

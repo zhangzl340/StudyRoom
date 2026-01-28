@@ -1,22 +1,26 @@
 // src/api/checkIn.api.ts
 import { http } from '@/utils/request';
 import { handleApiResponse, API_CONFIG } from './config';
+import type { IApiResponse } from '@/types/api.types';
 
 // 签到请求参数
 export interface ICheckInRequest {
-  reservationId: string;
-  verifyType: 'qrcode' | 'face'; // 验证类型：扫码/人脸识别
-  verifyCode: string; // 二维码内容/人脸识别标识
+  reservationId: number;
+  seatId?: number;
+  roomId?: number;
+  checkInMethod: 'qr_code' | 'face_recognition' | 'manual'; // 签到方式：二维码/人脸识别/手动
+  deviceInfo?: string;
+  ipAddress?: string;
 }
 
 // 暂离/返回请求参数
 export interface ILeaveRequest {
-  reservationId: string;
+  reservationId: number;
 }
 
 // 签退请求参数
 export interface ICheckOutRequest {
-  checkInId: string;
+  checkInId: number;
   remarks?: string;
 }
 
@@ -26,7 +30,7 @@ export const checkInApi = {
    * 签到
    */
   async checkIn(data: ICheckInRequest) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.post(`student/checkin/in`, data)
     );
   },
@@ -35,7 +39,7 @@ export const checkInApi = {
    * 签退
    */
   async checkOut(data: ICheckOutRequest) {
-    return handleApiResponse<void>(
+    return handleApiResponse<IApiResponse<void>>(
       http.post(`student/checkin/out`, data)
     );
   },
@@ -44,7 +48,7 @@ export const checkInApi = {
    * 暂离
    */
   async temporaryLeave(data: ILeaveRequest) {
-    return handleApiResponse<void>(
+    return handleApiResponse<IApiResponse<void>>(
       http.post(`student/checkin/leave`, data)
     );
   },
@@ -53,7 +57,7 @@ export const checkInApi = {
    * 暂离返回
    */
   async backFromLeave(data: ILeaveRequest) {
-    return handleApiResponse<void>(
+    return handleApiResponse<IApiResponse<void>>(
       http.post(`student/checkin/return`, data)
     );
   },
@@ -61,8 +65,8 @@ export const checkInApi = {
   /**
    * 获取签到记录详情
    */
-  async getCheckInRecordDetail(id: string) {
-    return handleApiResponse<any>(
+  async getCheckInRecordDetail(id: number) {
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`student/checkin/detail/${id}`)
     );
   },
@@ -71,7 +75,7 @@ export const checkInApi = {
    * 获取用户签到记录
    */
   async getUserCheckInRecords() {
-    return handleApiResponse<any[]>(
+    return handleApiResponse<IApiResponse<any[]>>(
       http.get(`student/checkin/list`)
     );
   },
@@ -80,7 +84,7 @@ export const checkInApi = {
    * 获取当前签到信息
    */
   async getCurrentCheckIn() {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`student/checkin/current`)
     );
   },
@@ -88,8 +92,8 @@ export const checkInApi = {
   /**
    * 生成签到二维码
    */
-  async generateCheckInQRCode(reservationId: string) {
-    return handleApiResponse<any>(
+  async generateCheckInQRCode(reservationId: number) {
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`student/checkin/qrcode`, {
         params: { reservationId }
       })
@@ -100,7 +104,7 @@ export const checkInApi = {
    * 验证签到二维码
    */
   async verifyCheckInQRCode(qrCode: string) {
-    return handleApiResponse<boolean>(
+    return handleApiResponse<IApiResponse<boolean>>(
       http.post(`student/checkin/verify-qrcode`, null, {
         params: { qrCode }
       })

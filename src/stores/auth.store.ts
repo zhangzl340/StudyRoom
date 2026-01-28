@@ -45,14 +45,14 @@ export const useAuthStore = defineStore('auth', {
       console.log('登录参数', data)
       try {
         const { data: response, error } = await authApi.login(data)
-        
+        console.log("调用登录接口成功")
         if (error) throw error
         
-        const { token, user } = response
-        this.setUser(user)
+        const { token, userInfo } = response.data
+        console.log('登录成功 response.data :', response.data)
+        this.setUser(userInfo)
         this.setToken(token)
-        
-        return user
+        return userInfo
       } catch (error: any) {
         this.error = error.message || '登录失败'
         console.error('登录失败:', error)
@@ -78,8 +78,8 @@ export const useAuthStore = defineStore('auth', {
         
         const { data, error } = await authApi.getCurrentUser()
         if (error) throw error
-        this.setUser(data)
-        return data
+        this.setUser(data.data)
+        return data.data
       } catch (error: any) {
         this.error = error.message || '获取用户信息失败'
         console.error('获取用户信息失败:', error)
@@ -99,11 +99,11 @@ export const useAuthStore = defineStore('auth', {
           throw new Error('用户未登录')
         }
         
-        const { data: user, error } = await authApi.updateUserInfo(data)
+        const { data: userResponse, error } = await authApi.updateUserInfo(data)
         if (error) throw error
-        this.setUser(user)
+        this.setUser(userResponse.data)
         
-        return user
+        return userResponse.data
       } catch (error: any) {
         this.error = error.message || '更新用户信息失败'
         console.error('更新用户信息失败:', error)

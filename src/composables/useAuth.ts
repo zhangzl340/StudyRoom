@@ -1,8 +1,8 @@
 // 认证状态管理
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth.store'
-import { UserRole } from '@/types/user.types'
-
+import { UserRole} from '@/types/user.types'
+import { ILoginRequest } from "@/types/user.types"
 export const useAuth = () => {
   const authStore = useAuthStore()
 
@@ -35,8 +35,9 @@ export const useAuth = () => {
   })
 
   // 登录
-  const login = async (username: string, password: string) => {
-    return await authStore.login(username, password)
+  const login = async (loginData: ILoginRequest) => {
+    // console.log('认证状态管理login ', loginData)
+    return await authStore.login(loginData)
   }
 
   // 登出
@@ -55,8 +56,8 @@ export const useAuth = () => {
   }
 
   // 修改密码
-  const changePassword = async (oldPassword: string, newPassword: string) => {
-    return await authStore.changePassword(oldPassword, newPassword)
+  const changePassword = async (changePasswordData: any) => {
+    return await authStore.changePassword(changePasswordData)
   }
 
   return {

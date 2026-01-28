@@ -38,47 +38,58 @@ export enum ViolationType {
  * 预约基本信息接口
  */
 export interface IReservationBase {
-  id: string
-  userId: string
-  roomId: string
-  seatId: string
+  id: number
+  userId: number
+  roomId: number
+  seatId: number
+  reservationNo: string
   startTime: string
   endTime: string
+  expectedDuration: number
+  reservationType: string
 }
 
 /**
  * 预约详细信息接口
  */
 export interface IReservation extends IReservationBase {
-  status: ReservationStatus
+  status: string
+  actualDuration?: number
+  cancelReason?: string
+  cancelTime?: string
   checkInTime?: string
   checkOutTime?: string
-  checkInMethod?: CheckInMethod
-  actualStartTime?: string
-  actualEndTime?: string
-  totalDuration: number
-  actualDuration?: number
-  violationType?: ViolationType
-  violationPenalty?: number
-  notes?: string
-  createdAt: string
-  updatedAt: string
+  checkInMethod?: string
+  checkInQrcode?: string
+  checkInQrcodeExpire?: string
+  leaveTime?: string
+  returnTime?: string
+  leaveDuration?: number
+  maxLeaveMinutes?: number
+  isViolation?: number
+  violationType?: string
+  deductCredit?: number
+  createTime: string
+  updateTime: string
+  statusEnum?: any
+  reservationTypeEnum?: any
+  checkInMethodEnum?: any
   
   // 关联信息（可选，通常由后端返回）
   user?: {
-    id: string
+    id: number
     username: string
     realName: string
     studentId?: string
   }
   room?: {
-    id: string
+    id: number
     name: string
     building: string
     floor: string
   }
   seat?: {
-    id: string
+    id: number
     seatNumber: string
     type: string
   }
@@ -88,7 +99,7 @@ export interface IReservation extends IReservationBase {
  * 创建预约请求参数
  */
 export interface ICreateReservationRequest {
-  seatId: string
+  seatId: number
   startTime: string
   endTime: string
   notes?: string
@@ -109,9 +120,9 @@ export interface IUpdateReservationRequest {
 export interface IReservationQueryParams {
   page?: number
   pageSize?: number
-  userId?: string
-  roomId?: string
-  seatId?: string
+  userId?: number
+  roomId?: number
+  seatId?: number
   status?: ReservationStatus | ReservationStatus[]
   date?: string  // 查询指定日期的预约
   startDate?: string
@@ -132,53 +143,15 @@ export interface IReservationListResponse {
 }
 
 /**
- * 签到请求参数
- */
-export interface ICheckInRequest {
-  reservationId: string
-  checkInMethod: CheckInMethod
-  location?: {
-    latitude: number
-    longitude: number
-  }
-}
-
-/**
- * 签退请求参数
- */
-export interface ICheckOutRequest {
-  reservationId: string
-  location?: {
-    latitude: number
-    longitude: number
-  }
-}
-
-/**
- * 暂时离开请求参数
- */
-export interface ITempLeaveRequest {
-  reservationId: string
-  duration: number  // 离开时长（分钟）
-}
-
-/**
- * 返回座位请求参数
- */
-export interface IReturnSeatRequest {
-  reservationId: string
-}
-
-/**
  * 座位状态变更消息（用于WebSocket推送）
  */
 export interface ISeatStatusMessage {
   type: 'seat_status_update'
-  seatId: string
-  roomId: string
-  status: SeatStatus
-  reservationId?: string
-  userId?: string
+  seatId: number
+  roomId: number
+  status: string
+  reservationId?: number
+  userId?: number
   timestamp: string
 }
 

@@ -1,7 +1,7 @@
 // 统计相关API
 import { http } from '@/utils/request'
 import { handleApiResponse, API_CONFIG } from './config'
-import type { ISystemStats } from '@/types/api.types'
+import type { ISystemStats, IApiResponse } from '@/types/api.types'
 
 // 统计查询参数接口
 interface IStatisticsQueryRequest {
@@ -27,7 +27,7 @@ export const statisticsApi = {
    * 获取系统统计信息
    */
   async getSystemStats() {
-    return handleApiResponse<ISystemStats>(
+    return handleApiResponse<IApiResponse<ISystemStats>>(
       http.get(`admin/statistics/system`)
     )
   },
@@ -36,7 +36,7 @@ export const statisticsApi = {
    * 获取自习室使用统计
    */
   async getRoomUsageStats(params?: IStatisticsQueryRequest) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/room/usage`, { params })
     )
   },
@@ -45,7 +45,7 @@ export const statisticsApi = {
    * 获取房间使用率排名
    */
   async getRoomUsageRank(params?: IStatisticsQueryRequest) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/room/rank`, { params })
     )
   },
@@ -54,7 +54,7 @@ export const statisticsApi = {
    * 获取房间每日使用趋势
    */
   async getRoomDailyTrend(startDate: string, endDate: string) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/room/trend`, {
         params: { startDate, endDate }
       })
@@ -65,7 +65,7 @@ export const statisticsApi = {
    * 获取房间类型分布
    */
   async getRoomTypeDistribution() {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/room/distribution`)
     )
   },
@@ -74,7 +74,7 @@ export const statisticsApi = {
    * 获取房间座位使用情况
    */
   async getSeatUsageStats(params?: IStatisticsQueryRequest) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/room/seat`, { params })
     )
   },
@@ -83,7 +83,7 @@ export const statisticsApi = {
    * 获取房间高峰期分析
    */
   async getRoomPeakHours(params?: IStatisticsQueryRequest) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/room/peak`, { params })
     )
   },
@@ -92,7 +92,7 @@ export const statisticsApi = {
    * 获取房间预约取消率
    */
   async getRoomCancellationRate(params?: IStatisticsQueryRequest) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/room/cancellation`, { params })
     )
   },
@@ -101,7 +101,7 @@ export const statisticsApi = {
    * 获取房间平均使用时长
    */
   async getRoomAverageUsageTime(params?: IStatisticsQueryRequest) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/room/average-time`, { params })
     )
   },
@@ -109,8 +109,8 @@ export const statisticsApi = {
   /**
    * 获取座位热度统计
    */
-  async getSeatHeatmap(startDate: string, endDate: string) {
-    return handleApiResponse<any>(
+  async getReservationHeatmap(startDate: string, endDate: string) {
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/heatmap`, {
         params: { startDate, endDate }
       })
@@ -120,8 +120,8 @@ export const statisticsApi = {
   /**
    * 获取用户活跃度统计
    */
-  async getUserActivityStats(params?: IStatisticsQueryRequest) {
-    return handleApiResponse<any>(
+  async getUserUsageStats(params?: IStatisticsQueryRequest) {
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/user/usage`, { params })
     )
   },
@@ -130,7 +130,7 @@ export const statisticsApi = {
    * 获取用户活跃度排名
    */
   async getUserActivityRank(params?: IStatisticsQueryRequest) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/user/rank`, { params })
     )
   },
@@ -139,7 +139,7 @@ export const statisticsApi = {
    * 获取用户增长趋势
    */
   async getUserGrowthTrend(startDate: string, endDate: string) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/user/growth`, {
         params: { startDate, endDate }
       })
@@ -150,7 +150,7 @@ export const statisticsApi = {
    * 获取用户类型分布
    */
   async getUserTypeDistribution() {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/user/distribution`)
     )
   },
@@ -159,7 +159,7 @@ export const statisticsApi = {
    * 获取用户信用分分布
    */
   async getCreditScoreDistribution() {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/user/credit`)
     )
   },
@@ -168,7 +168,7 @@ export const statisticsApi = {
    * 获取用户预约行为分析
    */
   async getUserReservationBehavior(params?: IStatisticsQueryRequest) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/user/behavior`, { params })
     )
   },
@@ -177,7 +177,7 @@ export const statisticsApi = {
    * 获取用户违规情况统计
    */
   async getUserViolationStats(params?: IStatisticsQueryRequest) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/user/violation`, { params })
     )
   },
@@ -186,7 +186,7 @@ export const statisticsApi = {
    * 获取用户平均使用时长
    */
   async getUserAverageUsageTime(params?: IStatisticsQueryRequest) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/user/average-time`, { params })
     )
   },
@@ -195,7 +195,7 @@ export const statisticsApi = {
    * 获取用户留存率分析
    */
   async getUserRetentionRate(startDate: string, endDate: string) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/user/retention`, {
         params: { startDate, endDate }
       })
@@ -206,7 +206,7 @@ export const statisticsApi = {
    * 获取用户画像分析
    */
   async getUserProfileAnalysis() {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/user/profile`)
     )
   },
@@ -215,7 +215,7 @@ export const statisticsApi = {
    * 获取时间段使用统计
    */
   async getTimeSlotStats(params?: IStatisticsQueryRequest) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/time-slot`, { params })
     )
   },
@@ -224,7 +224,7 @@ export const statisticsApi = {
    * 获取每日统计快照
    */
   async getDailySnapshots(startDate: string, endDate: string) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.get(`admin/statistics/snapshots`, {
         params: { startDate, endDate }
       })
@@ -235,7 +235,7 @@ export const statisticsApi = {
    * 生成统计快照
    */
   async generateStatisticsSnapshot() {
-    return handleApiResponse<void>(
+    return handleApiResponse<IApiResponse<void>>(
       http.post(`admin/statistics/snapshot/generate`)
     )
   },
@@ -243,8 +243,8 @@ export const statisticsApi = {
   /**
    * 导出统计数据
    */
-  async exportStats(exportType: string, queryRequest?: IStatisticsQueryRequest) {
-    return handleApiResponse<any>(
+  async exportStatistics(exportType: string, queryRequest?: IStatisticsQueryRequest) {
+    return handleApiResponse<IApiResponse<any>>(
       http.post(`admin/statistics/export`, {
         exportType,
         queryRequest

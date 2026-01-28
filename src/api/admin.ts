@@ -7,6 +7,7 @@ import type {
   IUserQueryParams,
   IUpdateUserRequest
 } from '@/types/user.types'
+import type { IApiResponse } from '@/types/api.types'
 
 /**
  * 管理相关API
@@ -19,7 +20,7 @@ export const adminApi = {
    */
   async getUsers(params?: IUserQueryParams) {
     const queryParams = buildPaginationParams(params)
-    return handleApiResponse<IUserListResponse>(
+    return handleApiResponse<IApiResponse<IUserListResponse>>(
       http.get(`admin/users${queryParams}`)
     )
   },
@@ -28,7 +29,7 @@ export const adminApi = {
    * 获取用户详情
    */
   async getUser(id: string) {
-    return handleApiResponse<IUser>(
+    return handleApiResponse<IApiResponse<IUser>>(
       http.get(`admin/users/${id}`)
     )
   },
@@ -37,7 +38,7 @@ export const adminApi = {
    * 创建用户
    */
   async createUser(data: Partial<IUser>) {
-    return handleApiResponse<IUser>(
+    return handleApiResponse<IApiResponse<IUser>>(
       http.post(`admin/users`, data)
     )
   },
@@ -46,7 +47,7 @@ export const adminApi = {
    * 更新用户
    */
   async updateUser(id: string, data: IUpdateUserRequest) {
-    return handleApiResponse<IUser>(
+    return handleApiResponse<IApiResponse<IUser>>(
       http.put(`admin/users/${id}`, data)
     )
   },
@@ -55,7 +56,7 @@ export const adminApi = {
    * 删除用户
    */
   async deleteUser(id: string) {
-    return handleApiResponse<void>(
+    return handleApiResponse<IApiResponse<void>>(
       http.delete(`admin/users/${id}`)
     )
   },
@@ -64,7 +65,7 @@ export const adminApi = {
    * 启用/禁用用户
    */
   async toggleUserStatus(id: string, status: 'active' | 'inactive') {
-    return handleApiResponse<IUser>(
+    return handleApiResponse<IApiResponse<IUser>>(
       http.patch(`admin/users/${id}/status`, { status })
     )
   },
@@ -73,7 +74,7 @@ export const adminApi = {
    * 重置用户密码
    */
   async resetUserPassword(id: string) {
-    return handleApiResponse<{ newPassword: string }>(
+    return handleApiResponse<IApiResponse<{ newPassword: string }>>(
       http.post(`admin/users/${id}/reset-password`)
     )
   },
@@ -82,7 +83,7 @@ export const adminApi = {
    * 调整用户信用分
    */
   async adjustUserCredit(id: string, amount: number, reason: string) {
-    return handleApiResponse<IUser>(
+    return handleApiResponse<IApiResponse<IUser>>(
       http.post(`admin/users/${id}/adjust-credit`, { amount, reason })
     )
   },
@@ -94,7 +95,7 @@ export const adminApi = {
    */
   async getAnnouncements(params?: { page?: number; pageSize?: number }) {
     const queryParams = buildPaginationParams(params)
-    return handleApiResponse<{
+    return handleApiResponse<IApiResponse<{
       list: Array<{
         id: string
         title: string
@@ -105,7 +106,7 @@ export const adminApi = {
         isActive: boolean
       }>
       total: number
-    }>(
+    }>>(
       http.get(`admin/announcements${queryParams}`)
     )
   },
@@ -118,7 +119,7 @@ export const adminApi = {
     content: string
     type: 'info' | 'warning' | 'important'
   }) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.post(`admin/announcements`, data)
     )
   },
@@ -132,7 +133,7 @@ export const adminApi = {
     type: 'info' | 'warning' | 'important'
     isActive: boolean
   }>) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.put(`admin/announcements/${id}`, data)
     )
   },
@@ -141,7 +142,7 @@ export const adminApi = {
    * 删除公告
    */
   async deleteAnnouncement(id: string) {
-    return handleApiResponse<void>(
+    return handleApiResponse<IApiResponse<void>>(
       http.delete(`admin/announcements/${id}`)
     )
   },
@@ -152,7 +153,7 @@ export const adminApi = {
    * 获取系统设置
    */
   async getSystemSettings() {
-    return handleApiResponse<Record<string, any>>(
+    return handleApiResponse<IApiResponse<Record<string, any>>>(
       http.get(`admin/settings`)
     )
   },
@@ -161,7 +162,7 @@ export const adminApi = {
    * 更新系统设置
    */
   async updateSystemSettings(data: Record<string, any>) {
-    return handleApiResponse<Record<string, any>>(
+    return handleApiResponse<IApiResponse<Record<string, any>>>(
       http.put(`admin/settings`, data)
     )
   },
@@ -170,7 +171,7 @@ export const adminApi = {
    * 获取预约规则设置
    */
   async getReservationRules() {
-    return handleApiResponse<{
+    return handleApiResponse<IApiResponse<{
       maxReservationPerDay: number
       maxFutureDays: number
       minReservationMinutes: number
@@ -179,7 +180,7 @@ export const adminApi = {
       checkInLateMinutes: number
       autoCancelMinutes: number
       tempLeaveMaxMinutes: number
-    }>(
+    }>>(
       http.get(`admin/settings/reservation-rules`)
     )
   },
@@ -197,7 +198,7 @@ export const adminApi = {
     autoCancelMinutes: number
     tempLeaveMaxMinutes: number
   }>) {
-    return handleApiResponse<any>(
+    return handleApiResponse<IApiResponse<any>>(
       http.put(`admin/settings/reservation-rules`, data)
     )
   },
@@ -208,11 +209,11 @@ export const adminApi = {
    * 清理过期数据
    */
   async cleanupExpiredData() {
-    return handleApiResponse<{
+    return handleApiResponse<IApiResponse<{
       deletedReservations: number
       deletedLogs: number
       freedSpace: string
-    }>(
+    }>>(
       http.post(`admin/cleanup`)
     )
   },
@@ -221,7 +222,7 @@ export const adminApi = {
    * 备份系统数据
    */
   async backupData() {
-    return handleApiResponse<{ backupId: string; downloadUrl: string }>(
+    return handleApiResponse<IApiResponse<{ backupId: string; downloadUrl: string }>>(
       http.post(`admin/backup`)
     )
   },
@@ -238,7 +239,7 @@ export const adminApi = {
     keyword?: string
   }) {
     const queryParams = buildPaginationParams(params)
-    return handleApiResponse<{
+    return handleApiResponse<IApiResponse<{
       list: Array<{
         id: string
         level: string
@@ -249,7 +250,7 @@ export const adminApi = {
         userAgent?: string
       }>
       total: number
-    }>(
+    }>>(
       http.get(`admin/logs${queryParams}`)
     )
   }

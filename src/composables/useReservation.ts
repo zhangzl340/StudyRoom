@@ -1,5 +1,5 @@
 // 预约逻辑
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useReservationStore } from '@/stores/reservation.store'
 import { useAuthStore } from '@/stores/auth.store'
 import { formatDateTime, getDurationMinutes } from '@/utils/date'
@@ -33,18 +33,18 @@ export const useReservation = () => {
   }
 
   // 取消预约
-  const cancelReservation = async (reservationId: string) => {
+  const cancelReservation = async (reservationId: number) => {
     return await reservationStore.cancelReservation(reservationId)
   }
 
   // 签到
-  const checkIn = async (reservationId: string, method: any) => {
+  const checkIn = async (reservationId: number, method: any) => {
     return await reservationStore.checkIn(reservationId, method)
   }
 
   // 签退
-  const checkOut = async (reservationId: string) => {
-    return await reservationStore.checkOut(reservationId)
+  const checkOut = async (checkInId: number) => {
+    return await reservationStore.checkOut(checkInId)
   }
 
   // 获取我的预约
@@ -57,7 +57,7 @@ export const useReservation = () => {
   }
 
   // 检查预约冲突
-  const checkReservationConflict = async (seatId: string, startTime: string, endTime: string) => {
+  const checkReservationConflict = async (seatId: number, startTime: string, endTime: string) => {
     return await reservationStore.checkReservationConflict(seatId, startTime, endTime)
   }
 

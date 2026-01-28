@@ -51,11 +51,12 @@ export const buildPaginationParams = (params?: IPaginationParams): string => {
  */
 export const handleApiResponse = async <T>(
   promise: Promise<T>
-): Promise<{ data: T; error: Error | null }> => {
+): Promise<{ data: T | null; error: Error | null }> => {
   try {
-    const data = await promise
-    return { data, error: null }
+    const response = await promise
+    console.log('API响应:', response)
+    return { data: response, error: null }
   } catch (error: any) {
-    return { data: null as any, error }
+    return { data: null, error }
   }
 }

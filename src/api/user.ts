@@ -1,6 +1,7 @@
 import { http } from '@/utils/request'
 import { handleApiResponse, buildPaginationParams, API_CONFIG } from './config'
 import type { IUser, IUserListResponse, IUserQueryParams } from '@/types/user.types'
+import type { IApiResponse } from '@/types/api.types'
 
 /**
  * 用户相关API
@@ -10,7 +11,7 @@ export const userApi = {
    * 获取用户列表
    */
   async getUsers(params?: IUserQueryParams) {
-    return handleApiResponse<IUserListResponse>(
+    return handleApiResponse<IApiResponse<IUserListResponse>>(
       http.get(`admin/user/list`, { params })
     )
   },
@@ -19,7 +20,7 @@ export const userApi = {
    * 获取用户详情
    */
   async getUser(id: string) {
-    return handleApiResponse<IUser>(
+    return handleApiResponse<IApiResponse<IUser>>(
       http.get(`admin/user/detail/${id}`)
     )
   },
@@ -28,7 +29,7 @@ export const userApi = {
    * 创建用户
    */
   async createUser(data: any) {
-    return handleApiResponse<IUser>(
+    return handleApiResponse<IApiResponse<IUser>>(
       http.post(`admin/user/create`, data)
     )
   },
@@ -37,7 +38,7 @@ export const userApi = {
    * 更新用户信息
    */
   async updateUser(id: string, data: Partial<IUser>) {
-    return handleApiResponse<IUser>(
+    return handleApiResponse<IApiResponse<IUser>>(
       http.put(`admin/user/update/${id}`, data)
     )
   },
@@ -46,7 +47,7 @@ export const userApi = {
    * 删除用户
    */
   async deleteUser(id: string) {
-    return handleApiResponse<void>(
+    return handleApiResponse<IApiResponse<void>>(
       http.delete(`admin/user/delete/${id}`)
     )
   },
@@ -55,7 +56,7 @@ export const userApi = {
    * 启用/禁用用户
    */
   async updateUserStatus(id: string, status: string) {
-    return handleApiResponse<IUser>(
+    return handleApiResponse<IApiResponse<IUser>>(
       http.put(`admin/user/status/${id}`, null, {
         params: { status }
       })
@@ -66,7 +67,7 @@ export const userApi = {
    * 重置用户密码
    */
   async resetUserPassword(id: string) {
-    return handleApiResponse<string>(
+    return handleApiResponse<IApiResponse<string>>(
       http.post(`admin/user/reset-password/${id}`)
     )
   },
@@ -75,7 +76,7 @@ export const userApi = {
    * 调整用户信用分
    */
   async adjustUserCredit(id: string, amount: number, reason: string) {
-    return handleApiResponse<IUser>(
+    return handleApiResponse<IApiResponse<IUser>>(
       http.post(`admin/user/adjust-credit/${id}`, null, {
         params: { amount, reason }
       })
@@ -86,7 +87,7 @@ export const userApi = {
    * 搜索用户
    */
   async searchUsers(keyword: string) {
-    return handleApiResponse<IUser[]>(
+    return handleApiResponse<IApiResponse<IUser[]>>(
       http.get(`admin/user/list`, { params: { keyword } })
     )
   }
