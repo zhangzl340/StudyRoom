@@ -30,7 +30,7 @@
       
       <el-form-item label="验证码" prop="captcha">
         <el-input
-          v-model="loginForm.captcha"
+          v-model="loginForm.captchaCode"
           placeholder="请输入验证码"
           clearable
         />
@@ -88,7 +88,8 @@ const loginFormRef = ref<InstanceType<typeof ElForm>>();
 const loginForm = reactive<ILoginRequest>({
   username: '',
   password: '',
-  captcha: ''
+  captchaCode: '',
+  captchaKey: ''
 });
 
 const loading = ref(false);
@@ -100,7 +101,7 @@ const loginRules = reactive({
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' }
   ],
-  captcha: [
+  captchaCode: [
     { required: true, message: '请输入验证码', trigger: 'blur' }
   ]
 });
@@ -110,8 +111,9 @@ const captchaImage = ref('');
 const refreshCaptcha = async () => {
   try {
     const { data } = await authApi.getCaptcha();
+    console.log(data);
     if (data) {
-      loginForm.captcha = data.captcha;
+      loginForm.captchaKey = data.captchaKey;
       captchaImage.value = data.captchaImage;
     }
   } catch (error) {

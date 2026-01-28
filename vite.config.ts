@@ -32,12 +32,12 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:8080', // 后端服务器地址
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        changeOrigin: true
       },
       '/ws': {
         target: 'ws://localhost:8080', // WebSocket 服务器地址
-        ws: true
+        ws: true,
+        changeOrigin: true
       }
     }
   },

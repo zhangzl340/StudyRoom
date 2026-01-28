@@ -1,6 +1,6 @@
 // 认证相关API
 import { http } from '@/utils/request'
-import { handleApiResponse } from './config'
+import { handleApiResponse, API_CONFIG } from './config'
 import type {
   ILoginRequest,
   ILoginResponse,
@@ -19,7 +19,7 @@ export const authApi = {
    */
   async login(data: ILoginRequest) {
     return handleApiResponse<ILoginResponse>(
-      http.post('/auth/login', data)
+      http.post(`auth/login`, data)
     )
   },
   
@@ -28,7 +28,7 @@ export const authApi = {
    */
   async register(data: IRegisterRequest) {
     return handleApiResponse<IUser>(
-      http.post('/auth/register', data)
+      http.post(`auth/register`, data)
     )
   },
   
@@ -37,7 +37,7 @@ export const authApi = {
    */
   async logout() {
     return handleApiResponse<void>(
-      http.post('/auth/logout')
+      http.post(`auth/logout`)
     )
   },
   
@@ -46,7 +46,7 @@ export const authApi = {
    */
   async getCurrentUser() {
     return handleApiResponse<IUser>(
-      http.get('/auth/me')
+      http.get(`auth/me`)
     )
   },
   
@@ -55,7 +55,7 @@ export const authApi = {
    */
   async refreshToken(refreshToken: string) {
     return handleApiResponse<ILoginResponse>(
-      http.post('/auth/refresh', { refreshToken })
+      http.post(`auth/refresh`, { refreshToken })
     )
   },
   
@@ -64,7 +64,7 @@ export const authApi = {
    */
   async updateUserInfo(data: IUpdateUserRequest) {
     return handleApiResponse<IUser>(
-      http.put('/auth/profile', data)
+      http.put(`auth/profile`, data)
     )
   },
   
@@ -73,7 +73,7 @@ export const authApi = {
    */
   async changePassword(data: IChangePasswordRequest) {
     return handleApiResponse<void>(
-      http.post('/auth/change-password', data)
+      http.post(`auth/change-password`, data)
     )
   },
   
@@ -82,7 +82,7 @@ export const authApi = {
    */
   async getCaptcha() {
     return handleApiResponse<{ captcha: string; captchaImage: string }>(
-      http.get('/api/auth/captcha')
+      http.get(`auth/captcha`)
     )
   },
   
@@ -91,7 +91,9 @@ export const authApi = {
    */
   async requestResetPassword(email: string) {
     return handleApiResponse<void>(
-      http.post('/auth/reset-password/request', { email })
+      http.post(`auth/reset-password/request`, null, {
+        params: { email }
+      })
     )
   },
   
@@ -100,7 +102,18 @@ export const authApi = {
    */
   async resetPassword(token: string, newPassword: string) {
     return handleApiResponse<void>(
-      http.post('/auth/reset-password', { token, newPassword })
+      http.post(`auth/reset-password`, null, {
+        params: { token, newPassword }
+      })
+    )
+  },
+  
+  /**
+   * 实名认证
+   */
+  async verifyIdentity(data: any) {
+    return handleApiResponse<any>(
+      http.post(`auth/verify-identity`, data)
     )
   }
 }

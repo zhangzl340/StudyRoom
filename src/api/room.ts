@@ -1,6 +1,6 @@
 // 自习室相关API
 import { http } from '@/utils/request'
-import { handleApiResponse, buildPaginationParams } from './config'
+import { handleApiResponse, buildPaginationParams, API_CONFIG } from './config'
 import type {
   IRoom,
   IRoomListResponse,
@@ -20,9 +20,8 @@ export const roomApi = {
    * 获取自习室列表
    */
   async getRooms(params?: IRoomQueryParams) {
-    const queryParams = buildPaginationParams(params)
     return handleApiResponse<IRoomListResponse>(
-      http.get(`/rooms${queryParams}`)
+      http.get(`room/list`, { params })
     )
   },
   
@@ -31,7 +30,7 @@ export const roomApi = {
    */
   async getRoom(id: string) {
     return handleApiResponse<IRoom>(
-      http.get(`/rooms/${id}`)
+      http.get(`room/detail/${id}`)
     )
   },
   
@@ -39,8 +38,8 @@ export const roomApi = {
    * 创建自习室
    */
   async createRoom(data: ICreateRoomRequest) {
-    return handleApiResponse<IRoom>(
-      http.post('/rooms', data)
+    return handleApiResponse<void>(
+      http.post(`admin/room/create`, data)
     )
   },
   
@@ -48,8 +47,8 @@ export const roomApi = {
    * 更新自习室
    */
   async updateRoom(id: string, data: IUpdateRoomRequest) {
-    return handleApiResponse<IRoom>(
-      http.put(`/rooms/${id}`, data)
+    return handleApiResponse<void>(
+      http.put(`admin/room/update/${id}`, data)
     )
   },
   
@@ -58,7 +57,18 @@ export const roomApi = {
    */
   async deleteRoom(id: string) {
     return handleApiResponse<void>(
-      http.delete(`/rooms/${id}`)
+      http.delete(`admin/room/delete/${id}`)
+    )
+  },
+  
+  /**
+   * 更新自习室状态
+   */
+  async updateRoomStatus(id: string, status: number) {
+    return handleApiResponse<void>(
+      http.put(`admin/room/status/${id}`, null, {
+        params: { status }
+      })
     )
   },
   
@@ -67,7 +77,25 @@ export const roomApi = {
    */
   async getRoomSeats(roomId: string) {
     return handleApiResponse<ISeat[]>(
-      http.get(`/rooms/${roomId}/seats`)
+      http.get(`room/${roomId}/seats`)
+    )
+  },
+  
+  /**
+   * 获取自习室可用座位
+   */
+  async getAvailableSeats(roomId: string) {
+    return handleApiResponse<ISeat[]>(
+      http.get(`room/${roomId}/available-seats`)
+    )
+  },
+  
+  /**
+   * 获取自习室统计信息
+   */
+  async getSeatStatistics(roomId: string) {
+    return handleApiResponse<Record<string, any>>(
+      http.get(`room/${roomId}/seat-statistics`)
     )
   },
   
@@ -76,7 +104,7 @@ export const roomApi = {
    */
   async getRoomLayout(roomId: string) {
     return handleApiResponse<IRoomLayout>(
-      http.get(`/rooms/${roomId}/layout`)
+      http.get(`admin/seat/layout/${roomId}`)
     )
   },
   
@@ -85,7 +113,7 @@ export const roomApi = {
    */
   async updateRoomLayout(roomId: string, data: IRoomLayout) {
     return handleApiResponse<IRoomLayout>(
-      http.put(`/rooms/${roomId}/layout`, data)
+      http.put(`admin/seat/layout`, { roomId, ...data })
     )
   },
   
@@ -94,7 +122,7 @@ export const roomApi = {
    */
   async getRoomRealTimeStatus(roomId: string) {
     return handleApiResponse<IRoomRealTimeStatus>(
-      http.get(`/rooms/${roomId}/status`)
+      http.get(`room/status/${roomId}`)
     )
   },
   
@@ -103,7 +131,7 @@ export const roomApi = {
    */
   async getAllRoomsRealTimeStatus() {
     return handleApiResponse<IRoomRealTimeStatus[]>(
-      http.get('/rooms/status/all')
+      http.get(`room/list`)
     )
   },
   
@@ -112,16 +140,16 @@ export const roomApi = {
    */
   async importSeats(roomId: string, seats: Partial<ISeat>[]) {
     return handleApiResponse<ISeat[]>(
-      http.post(`/rooms/${roomId}/seats/import`, { seats })
+      http.post(`admin/seat/import`, { roomId, seats })
     )
   },
   
   /**
    * 获取可用的自习室
    */
-  async getAvailableRooms(startTime: string, endTime: string) {
+  async getAvailableRooms() {
     return handleApiResponse<IRoom[]>(
-      http.get('/rooms/available', { params: { startTime, endTime } })
+      http.get(`room/available`)
     )
   },
   
@@ -130,7 +158,7 @@ export const roomApi = {
    */
   async searchRooms(keyword: string) {
     return handleApiResponse<IRoom[]>(
-      http.get('/rooms/search', { params: { keyword } })
+      http.get(`room/list`, { params: { keyword } })
     )
   }
 }

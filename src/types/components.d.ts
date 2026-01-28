@@ -73,7 +73,6 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SeatItem: typeof import('./../components/common/UI/SeatItem.vue')['default']
     SeatLayoutEditor: typeof import('./../components/admin/SeatLayoutEditor.vue')['default']
-    SeatMao: typeof import('../components/student/SeatMap.vue')['default']
     SeatMap: typeof import('./../components/student/SeatMap.vue')['default']
     Sidebar: typeof import('./../components/common/Layout/Sidebar.vue')['default']
     StatisticsDashboard: typeof import('./../components/admin/StatisticsDashboard.vue')['default']

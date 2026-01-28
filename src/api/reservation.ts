@@ -1,6 +1,6 @@
 // 预约相关API
 import { http } from '@/utils/request'
-import { handleApiResponse, buildPaginationParams } from './config'
+import { handleApiResponse, buildPaginationParams, API_CONFIG } from './config'
 import type {
   IReservation,
   IReservationListResponse,
@@ -22,9 +22,8 @@ export const reservationApi = {
    * 获取预约列表
    */
   async getReservations(params?: IReservationQueryParams) {
-    const queryParams = buildPaginationParams(params)
     return handleApiResponse<IReservationListResponse>(
-      http.get(`/reservations${queryParams}`)
+      http.get(`student/reservation/list`, { params })
     )
   },
   
@@ -33,7 +32,7 @@ export const reservationApi = {
    */
   async getReservation(id: string) {
     return handleApiResponse<IReservation>(
-      http.get(`/reservations/${id}`)
+      http.get(`student/reservation/detail/${id}`)
     )
   },
   
@@ -41,17 +40,26 @@ export const reservationApi = {
    * 创建预约
    */
   async createReservation(data: ICreateReservationRequest) {
-    return handleApiResponse<IReservation>(
-      http.post('/reservations', data)
+    return handleApiResponse<void>(
+      http.post(`student/reservation/create`, data)
     )
   },
   
   /**
    * 取消预约
    */
-  async cancelReservation(id: string) {
-    return handleApiResponse<IReservation>(
-      http.post(`/reservations/${id}/cancel`)
+  async cancelReservation(reservationId: string) {
+    return handleApiResponse<void>(
+      http.post(`student/reservation/cancel`, { reservationId })
+    )
+  },
+  
+  /**
+   * 确认预约
+   */
+  async checkReservation(reservationId: string) {
+    return handleApiResponse<void>(
+      http.post(`student/reservation/check`, { reservationId })
     )
   },
   
@@ -59,8 +67,17 @@ export const reservationApi = {
    * 修改预约
    */
   async updateReservation(id: string, data: IUpdateReservationRequest) {
-    return handleApiResponse<IReservation>(
-      http.put(`/reservations/${id}`, data)
+    return handleApiResponse<void>(
+      http.put(`student/reservation/update/${id}`, data)
+    )
+  },
+  
+  /**
+   * 计算预约费用
+   */
+  async calculateReservationFee(data: ICreateReservationRequest) {
+    return handleApiResponse<number>(
+      http.post(`student/reservation/fee`, data)
     )
   },
   
@@ -69,7 +86,7 @@ export const reservationApi = {
    */
   async checkIn(data: ICheckInRequest) {
     return handleApiResponse<IReservation>(
-      http.post('/reservations/check-in', data)
+      http.post(`student/checkin/in`, data)
     )
   },
   
@@ -78,7 +95,7 @@ export const reservationApi = {
    */
   async checkOut(data: ICheckOutRequest) {
     return handleApiResponse<IReservation>(
-      http.post('/reservations/check-out', data)
+      http.post(`student/checkin/out`, data)
     )
   },
   
@@ -87,7 +104,7 @@ export const reservationApi = {
    */
   async tempLeave(data: ITempLeaveRequest) {
     return handleApiResponse<IReservation>(
-      http.post('/reservations/temp-leave', data)
+      http.post(`student/checkin/leave`, data)
     )
   },
   
@@ -96,7 +113,7 @@ export const reservationApi = {
    */
   async returnSeat(data: IReturnSeatRequest) {
     return handleApiResponse<IReservation>(
-      http.post('/reservations/return-seat', data)
+      http.post(`student/checkin/return`, data)
     )
   },
   
@@ -104,9 +121,8 @@ export const reservationApi = {
    * 获取当前用户的预约
    */
   async getMyReservations(params?: Omit<IReservationQueryParams, 'userId'>) {
-    const queryParams = buildPaginationParams(params)
     return handleApiResponse<IReservationListResponse>(
-      http.get(`/reservations/my${queryParams}`)
+      http.get(`student/reservation/list`, { params })
     )
   },
   
@@ -115,7 +131,7 @@ export const reservationApi = {
    */
   async getUpcomingReservations() {
     return handleApiResponse<IReservation[]>(
-      http.get('/reservations/upcoming')
+      http.get(`student/reservation/upcoming`)
     )
   },
   
@@ -123,18 +139,15 @@ export const reservationApi = {
    * 检查预约冲突
    */
   async checkReservationConflict(
+    roomId: string,
     seatId: string,
     startTime: string,
-    endTime: string,
-    excludeReservationId?: string
+    endTime: string
   ) {
-    const params: Record<string, any> = { seatId, startTime, endTime }
-    if (excludeReservationId) {
-      params.excludeReservationId = excludeReservationId
-    }
+    const params: Record<string, any> = { roomId, seatId, startTime, endTime }
     
     return handleApiResponse<IReservationConflictCheck>(
-      http.get('/reservations/check-conflict', { params })
+      http.get(`student/reservation/availability`, { params })
     )
   },
   
@@ -143,7 +156,7 @@ export const reservationApi = {
    */
   async getSeatAvailability(seatId: string, date: string) {
     return handleApiResponse<Array<{ startTime: string; endTime: string }>>(
-      http.get(`/reservations/seat/${seatId}/availability`, { params: { date } })
+      http.get(`student/reservation/availability`, { params: { seatId, date } })
     )
   },
   
@@ -157,7 +170,7 @@ export const reservationApi = {
       upcoming: number
       cancelled: number
     }>(
-      http.get('/reservations/stats/today')
+      http.get(`student/reservation/statistics`)
     )
   }
 }

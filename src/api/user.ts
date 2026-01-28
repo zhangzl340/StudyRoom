@@ -1,5 +1,5 @@
 import { http } from '@/utils/request'
-import { handleApiResponse, buildPaginationParams } from './config'
+import { handleApiResponse, buildPaginationParams, API_CONFIG } from './config'
 import type { IUser, IUserListResponse, IUserQueryParams } from '@/types/user.types'
 
 /**
@@ -10,9 +10,8 @@ export const userApi = {
    * 获取用户列表
    */
   async getUsers(params?: IUserQueryParams) {
-    const queryParams = buildPaginationParams(params)
     return handleApiResponse<IUserListResponse>(
-      http.get(`/users${queryParams}`)
+      http.get(`admin/user/list`, { params })
     )
   },
   
@@ -21,7 +20,16 @@ export const userApi = {
    */
   async getUser(id: string) {
     return handleApiResponse<IUser>(
-      http.get(`/users/${id}`)
+      http.get(`admin/user/detail/${id}`)
+    )
+  },
+  
+  /**
+   * 创建用户
+   */
+  async createUser(data: any) {
+    return handleApiResponse<IUser>(
+      http.post(`admin/user/create`, data)
     )
   },
   
@@ -30,7 +38,7 @@ export const userApi = {
    */
   async updateUser(id: string, data: Partial<IUser>) {
     return handleApiResponse<IUser>(
-      http.put(`/users/${id}`, data)
+      http.put(`admin/user/update/${id}`, data)
     )
   },
   
@@ -39,7 +47,38 @@ export const userApi = {
    */
   async deleteUser(id: string) {
     return handleApiResponse<void>(
-      http.delete(`/users/${id}`)
+      http.delete(`admin/user/delete/${id}`)
+    )
+  },
+  
+  /**
+   * 启用/禁用用户
+   */
+  async updateUserStatus(id: string, status: string) {
+    return handleApiResponse<IUser>(
+      http.put(`admin/user/status/${id}`, null, {
+        params: { status }
+      })
+    )
+  },
+  
+  /**
+   * 重置用户密码
+   */
+  async resetUserPassword(id: string) {
+    return handleApiResponse<string>(
+      http.post(`admin/user/reset-password/${id}`)
+    )
+  },
+  
+  /**
+   * 调整用户信用分
+   */
+  async adjustUserCredit(id: string, amount: number, reason: string) {
+    return handleApiResponse<IUser>(
+      http.post(`admin/user/adjust-credit/${id}`, null, {
+        params: { amount, reason }
+      })
     )
   },
   
@@ -48,7 +87,7 @@ export const userApi = {
    */
   async searchUsers(keyword: string) {
     return handleApiResponse<IUser[]>(
-      http.get('/users/search', { params: { keyword } })
+      http.get(`admin/user/list`, { params: { keyword } })
     )
   }
 }

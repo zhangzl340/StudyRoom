@@ -230,9 +230,14 @@ export class WebSocketService {
  */
 export const createWebSocketService = (): WebSocketService => {
   const wsBaseUrl = import.meta.env.VITE_WS_BASE_URL || '/ws'
-  const wsUrl = wsBaseUrl.startsWith('ws://') || wsBaseUrl.startsWith('wss://')
+  
+  // 在开发环境中使用相对路径，让Vite代理处理
+  // 在生产环境中使用完整URL
+  const wsUrl = import.meta.env.DEV
     ? wsBaseUrl
-    : `${window.location.protocol === 'https:' ? 'wss://' : 'ws://'}${window.location.host}${wsBaseUrl}`
+    : (wsBaseUrl.startsWith('ws://') || wsBaseUrl.startsWith('wss://')
+      ? wsBaseUrl
+      : `${window.location.protocol === 'https:' ? 'wss://' : 'ws://'}${window.location.host}${wsBaseUrl}`)
   
   return new WebSocketService(wsUrl)
 }

@@ -56,7 +56,6 @@ export const handleApiResponse = async <T>(
     const data = await promise
     return { data, error: null }
   } catch (error: any) {
-    console.error('API请求失败:', error)
     return { data: null as any, error }
   }
 }

@@ -7,11 +7,7 @@ import '@/assets/styles/element-plus.scss'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import router from './router'
 import App from './App.vue'
-if (import.meta.env.DEV){
-  import("./mock").then(()=>{ 
-    console.log('Mock 数据已启用（仅开发环境）');
-  });
-}
+
 
 // 创建Vue应用实例
 const app = createApp(App)

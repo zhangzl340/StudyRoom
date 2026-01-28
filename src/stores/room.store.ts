@@ -97,79 +97,10 @@ export const useRoomStore = defineStore('room', {
       this.roomError = null
       
       try {
-        console.log('获取自习室列表，参数:', params)
-        
-        // 模拟数据
-        const mockRooms: IRoom[] = [
-          {
-            id: '1',
-            name: '第一教学楼101',
-            code: 'T1-101',
-            building: '第一教学楼',
-            floor: '1楼',
-            description: '安静舒适的自习室，配备空调和WiFi',
-            capacity: 50,
-            availableSeats: 45,
-            openTime: '08:00',
-            closeTime: '22:00',
-            status: 'open',
-            features: ['wifi', 'air_conditioner', 'power_sockets'],
-            imageUrl: '',
-            layoutType: 'grid',
-            adminIds: ['3'],
-            createdAt: '2024-01-01T00:00:00Z',
-            updatedAt: '2024-01-15T10:00:00Z'
-          },
-          {
-            id: '2',
-            name: '图书馆201',
-            code: 'LIB-201',
-            building: '图书馆',
-            floor: '2楼',
-            description: '图书馆内的安静自习区',
-            capacity: 80,
-            availableSeats: 72,
-            openTime: '08:00',
-            closeTime: '22:00',
-            status: 'open',
-            features: ['wifi', 'air_conditioner', 'quiet_zone'],
-            imageUrl: '',
-            layoutType: 'grid',
-            adminIds: ['3'],
-            createdAt: '2024-01-01T00:00:00Z',
-            updatedAt: '2024-01-15T10:00:00Z'
-          },
-          {
-            id: '3',
-            name: '计算机中心301',
-            code: 'CC-301',
-            building: '计算机中心',
-            floor: '3楼',
-            description: '计算机专业自习室，配备高性能电脑',
-            capacity: 40,
-            availableSeats: 30,
-            openTime: '09:00',
-            closeTime: '21:00',
-            status: 'open',
-            features: ['wifi', 'computers', 'printing'],
-            imageUrl: '',
-            layoutType: 'custom',
-            adminIds: ['3'],
-            createdAt: '2024-01-01T00:00:00Z',
-            updatedAt: '2024-01-15T10:00:00Z'
-          }
-        ]
-        
-        this.rooms = mockRooms
-        this.totalRooms = mockRooms.length
-        
-        // 实际使用时取消注释以下代码
-        /*
         const { data, error } = await roomApi.getRooms(params)
         if (error) throw error
         this.rooms = data.list
         this.totalRooms = data.total
-        */
       } catch (error: any) {
         this.roomError = error.message || '获取自习室列表失败'
         console.error('获取自习室列表失败:', error)
@@ -184,40 +115,12 @@ export const useRoomStore = defineStore('room', {
       this.roomError = null
       
       try {
-        console.log('获取自习室详情:', roomId)
-        
-        // 模拟数据
-        const mockRoom: IRoom = {
-          id: roomId,
-          name: '第一教学楼101',
-          code: 'T1-101',
-          building: '第一教学楼',
-          floor: '1楼',
-          description: '安静舒适的自习室，配备空调和WiFi',
-          capacity: 50,
-          availableSeats: 45,
-          openTime: '08:00',
-          closeTime: '22:00',
-          status: 'open',
-          features: ['wifi', 'air_conditioner', 'power_sockets'],
-          imageUrl: '',
-          layoutType: 'grid',
-          adminIds: ['3'],
-          createdAt: '2024-01-01T00:00:00Z',
-          updatedAt: '2024-01-15T10:00:00Z'
-        }
-        
-        this.currentRoom = mockRoom
-        
-        // 同时获取座位数据
-        await this.fetchRoomSeats(roomId)
-        
-        // 实际使用时取消注释以下代码
-        /*
         const { data, error } = await roomApi.getRoom(roomId)
         if (error) throw error
         this.currentRoom = data
-        */
+        
+        // 同时获取座位数据
+        await this.fetchRoomSeats(roomId)
       } catch (error: any) {
         this.roomError = error.message || '获取自习室详情失败'
         console.error('获取自习室详情失败:', error)
@@ -232,49 +135,9 @@ export const useRoomStore = defineStore('room', {
       this.roomError = null
       
       try {
-        console.log('获取自习室座位:', roomId)
-        
-        // 模拟数据 - 生成50个座位
-        const mockSeats: ISeat[] = Array.from({ length: 50 }, (_, index) => {
-          const row = Math.floor(index / 10) + 1
-          const col = (index % 10) + 1
-          
-          // 随机生成座位状态
-          const statuses: SeatStatus[] = ['available', 'occupied', 'reserved', 'available', 'available']
-          const randomStatus = statuses[Math.floor(Math.random() * statuses.length)]
-          
-          // 随机生成座位类型
-          const types = ['standard', 'window', 'power', 'standard', 'standard']
-          const randomType = types[Math.floor(Math.random() * types.length)] as any
-          
-          return {
-            id: `seat-${roomId}-${index + 1}`,
-            roomId,
-            seatNumber: `${row}排${col}号`,
-            name: `座位 ${index + 1}`,
-            type: randomType,
-            status: randomStatus,
-            position: {
-              row,
-              column: col,
-              x: col * 60,
-              y: row * 60
-            },
-            features: randomType === 'power' ? ['power'] : [],
-            isActive: true,
-            createdAt: '2024-01-01T00:00:00Z',
-            updatedAt: '2024-01-15T10:00:00Z'
-          }
-        })
-        
-        this.roomSeats = mockSeats
-        
-        // 实际使用时取消注释以下代码
-        /*
         const { data, error } = await roomApi.getRoomSeats(roomId)
         if (error) throw error
         this.roomSeats = data
-        */
       } catch (error: any) {
         this.roomError = error.message || '获取自习室座位失败'
         console.error('获取自习室座位失败:', error)
@@ -305,29 +168,10 @@ export const useRoomStore = defineStore('room', {
       this.roomError = null
       
       try {
-        console.log('创建自习室:', data)
-        
-        // 模拟创建
-        const newRoom: IRoom = {
-          id: Date.now().toString(),
-          ...data,
-          status: 'open',
-          availableSeats: data.capacity || 0,
-          adminIds: [],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
-        
-        this.rooms.push(newRoom)
-        this.totalRooms++
-        
-        // 实际使用时取消注释以下代码
-        /*
         const { data: room, error } = await roomApi.createRoom(data)
         if (error) throw error
         this.rooms.push(room)
         this.totalRooms++
-        */
       } catch (error: any) {
         this.roomError = error.message || '创建自习室失败'
         console.error('创建自习室失败:', error)
@@ -343,23 +187,18 @@ export const useRoomStore = defineStore('room', {
       this.roomError = null
       
       try {
-        console.log('更新自习室:', { id, data })
+        const { data: room, error } = await roomApi.updateRoom(id, data)
+        if (error) throw error
         
         // 更新本地数据
         const roomIndex = this.rooms.findIndex(room => room.id === id)
         if (roomIndex !== -1) {
-          this.rooms[roomIndex] = { ...this.rooms[roomIndex], ...data }
+          this.rooms[roomIndex] = { ...this.rooms[roomIndex], ...room }
         }
         
         if (this.currentRoom?.id === id) {
-          this.currentRoom = { ...this.currentRoom, ...data }
+          this.currentRoom = { ...this.currentRoom, ...room }
         }
-        
-        // 实际使用时取消注释以下代码
-        /*
-        const { data: room, error } = await roomApi.updateRoom(id, data)
-        if (error) throw error
-        */
       } catch (error: any) {
         this.roomError = error.message || '更新自习室失败'
         console.error('更新自习室失败:', error)
@@ -375,7 +214,8 @@ export const useRoomStore = defineStore('room', {
       this.roomError = null
       
       try {
-        console.log('删除自习室:', id)
+        const { error } = await roomApi.deleteRoom(id)
+        if (error) throw error
         
         // 更新本地数据
         this.rooms = this.rooms.filter(room => room.id !== id)
@@ -384,12 +224,6 @@ export const useRoomStore = defineStore('room', {
         if (this.currentRoom?.id === id) {
           this.clearCurrentRoom()
         }
-        
-        // 实际使用时取消注释以下代码
-        /*
-        const { error } = await roomApi.deleteRoom(id)
-        if (error) throw error
-        */
       } catch (error: any) {
         this.roomError = error.message || '删除自习室失败'
         console.error('删除自习室失败:', error)

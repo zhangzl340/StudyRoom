@@ -54,7 +54,7 @@ service.interceptors.response.use(
       const { code, message } = data
       
       // 处理成功响应
-      if (code === 0) {
+      if (code === 200) {
         return data.data
       }
       

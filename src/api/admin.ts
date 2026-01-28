@@ -1,6 +1,6 @@
 // 管理相关API
 import { http } from '@/utils/request'
-import { handleApiResponse, buildPaginationParams } from './config'
+import { handleApiResponse, buildPaginationParams ,API_CONFIG} from './config'
 import type {
   IUser,
   IUserListResponse,
@@ -20,7 +20,7 @@ export const adminApi = {
   async getUsers(params?: IUserQueryParams) {
     const queryParams = buildPaginationParams(params)
     return handleApiResponse<IUserListResponse>(
-      http.get(`/admin/users${queryParams}`)
+      http.get(`admin/users${queryParams}`)
     )
   },
   
@@ -29,7 +29,7 @@ export const adminApi = {
    */
   async getUser(id: string) {
     return handleApiResponse<IUser>(
-      http.get(`/admin/users/${id}`)
+      http.get(`admin/users/${id}`)
     )
   },
   
@@ -38,7 +38,7 @@ export const adminApi = {
    */
   async createUser(data: Partial<IUser>) {
     return handleApiResponse<IUser>(
-      http.post('/admin/users', data)
+      http.post(`admin/users`, data)
     )
   },
   
@@ -47,7 +47,7 @@ export const adminApi = {
    */
   async updateUser(id: string, data: IUpdateUserRequest) {
     return handleApiResponse<IUser>(
-      http.put(`/admin/users/${id}`, data)
+      http.put(`admin/users/${id}`, data)
     )
   },
   
@@ -56,7 +56,7 @@ export const adminApi = {
    */
   async deleteUser(id: string) {
     return handleApiResponse<void>(
-      http.delete(`/admin/users/${id}`)
+      http.delete(`admin/users/${id}`)
     )
   },
   
@@ -65,7 +65,7 @@ export const adminApi = {
    */
   async toggleUserStatus(id: string, status: 'active' | 'inactive') {
     return handleApiResponse<IUser>(
-      http.patch(`/admin/users/${id}/status`, { status })
+      http.patch(`admin/users/${id}/status`, { status })
     )
   },
   
@@ -74,7 +74,7 @@ export const adminApi = {
    */
   async resetUserPassword(id: string) {
     return handleApiResponse<{ newPassword: string }>(
-      http.post(`/admin/users/${id}/reset-password`)
+      http.post(`admin/users/${id}/reset-password`)
     )
   },
   
@@ -83,7 +83,7 @@ export const adminApi = {
    */
   async adjustUserCredit(id: string, amount: number, reason: string) {
     return handleApiResponse<IUser>(
-      http.post(`/admin/users/${id}/adjust-credit`, { amount, reason })
+      http.post(`admin/users/${id}/adjust-credit`, { amount, reason })
     )
   },
   
@@ -106,7 +106,7 @@ export const adminApi = {
       }>
       total: number
     }>(
-      http.get(`/admin/announcements${queryParams}`)
+      http.get(`admin/announcements${queryParams}`)
     )
   },
   
@@ -119,7 +119,7 @@ export const adminApi = {
     type: 'info' | 'warning' | 'important'
   }) {
     return handleApiResponse<any>(
-      http.post('/admin/announcements', data)
+      http.post(`admin/announcements`, data)
     )
   },
   
@@ -133,7 +133,7 @@ export const adminApi = {
     isActive: boolean
   }>) {
     return handleApiResponse<any>(
-      http.put(`/admin/announcements/${id}`, data)
+      http.put(`admin/announcements/${id}`, data)
     )
   },
   
@@ -142,7 +142,7 @@ export const adminApi = {
    */
   async deleteAnnouncement(id: string) {
     return handleApiResponse<void>(
-      http.delete(`/admin/announcements/${id}`)
+      http.delete(`admin/announcements/${id}`)
     )
   },
   
@@ -153,7 +153,7 @@ export const adminApi = {
    */
   async getSystemSettings() {
     return handleApiResponse<Record<string, any>>(
-      http.get('/admin/settings')
+      http.get(`admin/settings`)
     )
   },
   
@@ -162,7 +162,7 @@ export const adminApi = {
    */
   async updateSystemSettings(data: Record<string, any>) {
     return handleApiResponse<Record<string, any>>(
-      http.put('/admin/settings', data)
+      http.put(`admin/settings`, data)
     )
   },
   
@@ -180,7 +180,7 @@ export const adminApi = {
       autoCancelMinutes: number
       tempLeaveMaxMinutes: number
     }>(
-      http.get('/admin/settings/reservation-rules')
+      http.get(`admin/settings/reservation-rules`)
     )
   },
   
@@ -198,7 +198,7 @@ export const adminApi = {
     tempLeaveMaxMinutes: number
   }>) {
     return handleApiResponse<any>(
-      http.put('/admin/settings/reservation-rules', data)
+      http.put(`admin/settings/reservation-rules`, data)
     )
   },
   
@@ -213,7 +213,7 @@ export const adminApi = {
       deletedLogs: number
       freedSpace: string
     }>(
-      http.post('/admin/cleanup')
+      http.post(`admin/cleanup`)
     )
   },
   
@@ -222,7 +222,7 @@ export const adminApi = {
    */
   async backupData() {
     return handleApiResponse<{ backupId: string; downloadUrl: string }>(
-      http.post('/admin/backup')
+      http.post(`admin/backup`)
     )
   },
   
@@ -250,7 +250,7 @@ export const adminApi = {
       }>
       total: number
     }>(
-      http.get(`/admin/logs${queryParams}`)
+      http.get(`admin/logs${queryParams}`)
     )
   }
 }

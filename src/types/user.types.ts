@@ -54,7 +54,8 @@ export interface IUser extends IUserBase {
 export interface ILoginRequest {
   username: string
   password: string
-  captcha?: string
+  captchaCode: string
+  captchaKey: string
 }
 
 /**
